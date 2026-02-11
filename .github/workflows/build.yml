@@ -61,7 +61,11 @@ jobs:
       run: conan profile detect --force
 
     - name: Install project dependencies
-      run: conan install . -s build_type=${{ matrix.build_type }} --build=missing
+      run: >
+        conan install .
+        -s build_type=${{ matrix.build_type }}
+        -of ${{ github.workspace }}/build/${{ matrix.build_type }}
+        --build=missing
 
     - name: Configure CMake
       run: >
