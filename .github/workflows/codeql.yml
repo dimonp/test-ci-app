@@ -45,7 +45,6 @@ jobs:
         preset:
           - unixlike-gcc-debug
 
-
     steps:
     - uses: actions/checkout@v6
 
@@ -69,7 +68,7 @@ jobs:
         vcvarsall: ${{ contains(matrix.os, 'windows' )}}
 
         cmake: true
-        ninja: true
+        ninja: ${{ !contains(matrix.os, 'windows' )}}
         conan: true
         ccache: true
         clangtidy: false
@@ -83,7 +82,7 @@ jobs:
       run: conan profile detect --force
 
     - name: Install project dependencies
-      run: conan install . --build=missing
+      run: conan install . -s build_type=${{ matrix.build_type }} --build=missing
 
       # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
       # has meaningful results
