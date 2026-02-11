@@ -51,14 +51,12 @@ jobs:
           - compiler: gcc-14
             GCOV: gcov-14
             enable_ipo: On
-            preset: conf-unixlike-common
 
           # Inject GCOV variable for llvm
           - compiler: llvm-19.1.1
             LINKER: lld
             GCOV: "llvm-cov gcov"
             enable_ipo: On
-            preset: conf-unixlike-common
 
           - os: windows-latest
             compiler: msvc
@@ -114,7 +112,7 @@ jobs:
         -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{ matrix.packaging_maintainer_mode }}
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
         -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/generators/conan_toolchain.cmake"
-        --preset unixlike-gcc-release
+        --preset ${{ matrix.preset }}
 
     - name: Build project
       run: cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }}

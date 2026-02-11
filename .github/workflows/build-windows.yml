@@ -77,6 +77,7 @@ jobs:
         cpack -G ${{ matrix.package }}
         -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
+        -G ZIP
 
     # - name: publish
     #   uses: actions/upload-artifact@v6
