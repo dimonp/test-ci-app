@@ -61,9 +61,8 @@ jobs:
         --build=missing
 
     - name: Configure CMake
-      working-directory: ${{ github.workspace }}
       run: >
-        cmake -B "${{ github.workspace }}/build"
+        cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -S "${{ github.workspace }}"
         -G "${{ matrix.generator }}"
         -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
@@ -71,14 +70,12 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
-      working-directory: ${{ github.workspace }}
-      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+      run: cmake -B ${{ github.workspace }}/build/${{ matrix.build_type }} --config ${{ matrix.build_type }}
 
     - name: Pack artifacts
       working-directory: "${{ github.workspace }}/build/${{ matrix.build_type }}"
-      run: >
-        cpack -G TGZ
-        -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
+      run: |
+        cpack -G TGZ -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
 
     # - name: publish
     #   uses: actions/upload-artifact@v6

@@ -61,7 +61,6 @@ jobs:
         --build=missing
 
     - name: Configure CMake
-      working-directory: ${{ github.workspace }}
       run: >
         cmake -B "${{ github.workspace }}/build"
         -S "${{ github.workspace }}"
@@ -71,11 +70,10 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
-      working-directory: ${{ github.workspace }}
       run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
 
     - name: Pack artifacts
-      working-directory: "${{ github.workspace }}/build/${{ matrix.build_type }}"
+      working-directory: "${{ github.workspace }}/build/"
       run: >
         cpack -G ZIP
         -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
