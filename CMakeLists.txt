@@ -45,6 +45,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CPACK_GENERATOR "TGZ")
 endif()
+
 include(CPack)
 
 #########################TEST##############################

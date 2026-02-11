@@ -39,6 +39,9 @@ jobs:
         build_shared:
           - OFF
 
+        preset:
+          - conf-unixlike-common
+
         exclude:
           - os: windows-latest
             compiler: gcc-14

@@ -18,7 +18,7 @@
         {
             "name": "conf-windows-common",
             "description": "Windows settings for MSBuild toolchain that apply to msvc and clang",
-            "hidden": true,
+            "hidden": false,
             "inherits": "conf-common",
             "condition": {
                 "type": "equals",
@@ -41,7 +41,7 @@
         {
             "name": "conf-unixlike-common",
             "description": "Unix-like OS settings for gcc and clang toolchains",
-            "hidden": true,
+            "hidden": false,
             "inherits": "conf-common",
             "condition": {
                 "type": "inList",
