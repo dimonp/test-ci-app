@@ -70,17 +70,17 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
-      run: cmake -B ${{ github.workspace }}/build/${{ matrix.build_type }} --config ${{ matrix.build_type }}
+      run: cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}" --config ${{ matrix.build_type }}
 
     - name: Pack artifacts
       working-directory: "${{ github.workspace }}/build/${{ matrix.build_type }}"
       run: |
         cpack -G TGZ -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
 
-    # - name: publish
-    #   uses: actions/upload-artifact@v6
-    #   with:
-    #     name: test-${{ matrix.os }}
-    #     path: |
-    #       ${{ github.workspace }}/build/_CPack_Packages/Linux/TGZ/**/*
-    #       ! ${{ github.workspace }}/build/_CPack_Packages/Linux/TGZ/*.tar.gz
+    - name: publish
+      uses: actions/upload-artifact@v6
+      with:
+        name: test-${{ matrix.os }}
+        path: |
+          ${{ github.workspace }}/build/${{ matrix.build_type }}/_CPack_Packages/Linux/TGZ/**/*
+          ! ${{ github.workspace }}/build/${{ matrix.build_type }}/_CPack_Packages/Linux/TGZ/*.tar.gz
