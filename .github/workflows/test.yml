@@ -41,29 +41,36 @@ jobs:
           - os: windows-latest
             compiler: gcc-14
 
+        preset:
+          - conf-common
+
         include:
           # Inject GCOV variable for gcc
           - compiler: gcc-14
             GCOV: gcov-14
             enable_ipo: On
+            preset: conf-unixlike-common
 
           # Inject GCOV variable for llvm
           - compiler: llvm-19.1.1
             LINKER: lld
             GCOV: "llvm-cov gcov"
             enable_ipo: On
+            preset: conf-unixlike-common
 
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Debug
             enable_ipo: On
+            preset: windows-msvc-debug
 
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
             enable_ipo: On
+            preset: windows-msvc-release
 
     steps:
     - name: Checkout repository
