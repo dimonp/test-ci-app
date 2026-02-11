@@ -12,12 +12,13 @@ jobs:
     strategy:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ ubuntu-latest ]
-        build_type: [ Release ]
-        build_shared: [ OFF ]
-        # Set default triplet based on the runner operating system
-        # vcpkg-action automatically handles the correct triplet if not specified for common OSes
-        # We can define a default triplet or let the action figure it out
+        os:
+        - ubuntu-latest
+        build_type:
+        - Release
+
+        build_shared:
+        - OFF
 
         include:
         - os: ubuntu-latest
@@ -74,7 +75,7 @@ jobs:
     - name: Pack artifacts
       run: >
         cpack -G ${{ matrix.package }}
-        -B "${{ github.workspace }}/build"
+        -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
 
     # - name: publish
