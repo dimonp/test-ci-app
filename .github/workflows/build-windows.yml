@@ -76,7 +76,7 @@ jobs:
       working-directory: "${{ github.workspace }}/build/"
       run: >
         cpack -G ZIP
-        -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
+        -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-windows"
 
     - name: publish
       uses: actions/upload-artifact@v6

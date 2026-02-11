@@ -75,7 +75,7 @@ jobs:
     - name: Pack artifacts
       working-directory: "${{ github.workspace }}/build/${{ matrix.build_type }}"
       run: |
-        cpack -G TGZ -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
+        cpack -G TGZ -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-linux"
 
     - name: publish
       uses: actions/upload-artifact@v6
