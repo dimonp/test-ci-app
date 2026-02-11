@@ -61,7 +61,7 @@ jobs:
       run: conan profile detect --force
 
     - name: Install project dependencies
-      run: conan install . --build=missing
+      run: conan install . -s build_type=${{ matrix.build_type }} --build=missing
 
     - name: Configure CMake
       run: >
@@ -73,7 +73,7 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
-      run: cmake --build "${{ github.workspace }}/build" --config Release
+      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}`
 
     - name: Pack artifacts
       working-directory: build

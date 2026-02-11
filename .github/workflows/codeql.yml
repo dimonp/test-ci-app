@@ -108,8 +108,7 @@ jobs:
 
     - name: Build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: |
-        cmake --build ./build
+      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}`
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
