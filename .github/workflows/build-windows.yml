@@ -26,7 +26,6 @@ jobs:
           compiler: msvc
           generator: "Visual Studio 17 2022"
           preset: "windows-msvc-release"
-          package: ZIP
 
     steps:
     - name: Checkout repository
@@ -55,12 +54,14 @@ jobs:
       run: conan profile detect --force
 
     - name: Install project dependencies
+      working-directory: ${{ github.workspace }}
       run: >
         conan install .
         -s build_type=${{ matrix.build_type }}
         --build=missing
 
     - name: Configure CMake
+      working-directory: ${{ github.workspace }}
       run: >
         cmake -B "${{ github.workspace }}/build"
         -S "${{ github.workspace }}"
@@ -70,14 +71,14 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
+      working-directory: ${{ github.workspace }}
       run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
 
     - name: Pack artifacts
+      working-directory: "${{ github.workspace }}/build/${{ matrix.build_type }}"
       run: >
-        cpack -G ${{ matrix.package }}
-        -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
+        cpack -G ZIP
         -DCPACK_PACKAGE_FILE_NAME="test-custom-app-${{ github.ref_name }}-${{ matrix.os }}"
-        -G ZIP
 
     # - name: publish
     #   uses: actions/upload-artifact@v6
