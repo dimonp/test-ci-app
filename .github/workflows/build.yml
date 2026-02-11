@@ -73,7 +73,7 @@ jobs:
         --preset ${{ matrix.preset }}
 
     - name: Build project
-      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}`
+      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
 
     - name: Pack artifacts
       working-directory: build
