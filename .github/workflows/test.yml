@@ -14,7 +14,7 @@ jobs:
 
     permissions:
       actions: read
-      contents: read
+      contents: write
       security-events: write
 
     strategy:
@@ -23,58 +23,57 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          # - windows-latest
+          - windows-latest
 
         compiler:
-          # - llvm-19.1.1
+          - llvm-19.1.1
           - gcc-14
 
         generator:
           - "Ninja Multi-Config"
 
         build_type:
-          # - Release
+          - Release
           - Debug
 
         build_shared:
           - OFF
 
-        # exclude:
-        #   - os: windows-latest
-        #     compiler: gcc-14
+        exclude:
+          - os: windows-latest
+            compiler: gcc-14
 
-        #   - os: windows-latest
-        #     compiler: llvm-19.1.1
+          - os: windows-latest
+            compiler: llvm-19.1.1
 
         include:
           # Inject GCOV variable for gcc
           - compiler: gcc-14
-            GCOV: gcov-14
+            gcov_executable: gcov-14
             enable_ipo: On
 
           # Inject GCOV variable for llvm
-          # - compiler: llvm-19.1.1
-          #   LINKER: lld
-          #   GCOV: "llvm-cov gcov"
-          #   enable_ipo: On
+          - compiler: llvm-19.1.1
+            gcov_executable: gcov-14
+            enable_ipo: On
 
-          # - build_type: Release
-          #   preset: conan-release
+          - build_type: Release
+            preset: conan-release
 
           - build_type: Debug
             preset: conan-debug
 
-          # - os: windows-latest
-          #   compiler: msvc
-          #   generator: "Visual Studio 17 2022"
-          #   build_type: Debug
-          #   enable_ipo: On
+          - os: windows-latest
+            compiler: msvc
+            generator: "Visual Studio 17 2022"
+            build_type: Debug
+            enable_ipo: On
 
-          # - os: windows-latest
-          #   compiler: msvc
-          #   generator: "Visual Studio 17 2022"
-          #   build_type: Release
-          #   enable_ipo: On
+          - os: windows-latest
+            compiler: msvc
+            generator: "Visual Studio 17 2022"
+            build_type: Release
+            enable_ipo: On
 
     steps:
     - name: Checkout repository
@@ -165,3 +164,14 @@ jobs:
         title: "Coverage"
         cobertura-path: "./build/${{ matrix.build_type }}/coverage.xml"
 
+    - name: Publish coverage report to GitHub Pages
+      # upload the report only once
+      if: |
+        startsWith(matrix.os, 'ubuntu') &&
+        startsWith(matrix.compiler, 'gcc') &&
+        matrix.build_type == 'Debug'
+      uses: JamesIves/github-pages-deploy-action@v4.8.0
+      with:
+        folder: ./build/coverage/
+        branch: gh-pages
+        target-folder: coverage/
