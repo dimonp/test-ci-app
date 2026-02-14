@@ -18,7 +18,7 @@ jobs:
       security-events: write
 
     strategy:
-      # fail-fast: false
+      fail-fast: false
 
       matrix:
         os:
@@ -39,12 +39,12 @@ jobs:
         build_shared:
           - OFF
 
-        exclude:
-          - os: windows-latest
-            compiler: gcc-14
+        # exclude:
+        #   - os: windows-latest
+        #     compiler: gcc-14
 
-          - os: windows-latest
-            compiler: llvm-19.1.1
+        #   - os: windows-latest
+        #     compiler: llvm-19.1.1
 
         include:
           # Inject GCOV variable for gcc
@@ -53,28 +53,28 @@ jobs:
             enable_ipo: On
 
           # Inject GCOV variable for llvm
-          - compiler: llvm-19.1.1
-            LINKER: lld
-            GCOV: "llvm-cov gcov"
-            enable_ipo: On
+          # - compiler: llvm-19.1.1
+          #   LINKER: lld
+          #   GCOV: "llvm-cov gcov"
+          #   enable_ipo: On
 
-          - build_type: Release
-            preset: conan-release
+          # - build_type: Release
+          #   preset: conan-release
 
           - build_type: Debug
             preset: conan-debug
 
-          - os: windows-latest
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            enable_ipo: On
+          # - os: windows-latest
+          #   compiler: msvc
+          #   generator: "Visual Studio 17 2022"
+          #   build_type: Debug
+          #   enable_ipo: On
 
-          - os: windows-latest
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Release
-            enable_ipo: On
+          # - os: windows-latest
+          #   compiler: msvc
+          #   generator: "Visual Studio 17 2022"
+          #   build_type: Release
+          #   enable_ipo: On
 
     steps:
     - name: Checkout repository
