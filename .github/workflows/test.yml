@@ -47,6 +47,7 @@ jobs:
             compiler: llvm-19.1.1
 
         include:
+
           # Inject GCOV variable for gcc
           - compiler: gcc-14
             gcov_executable: gcov-14
@@ -54,14 +55,8 @@ jobs:
 
           # Inject GCOV variable for llvm
           - compiler: llvm-19.1.1
-            gcov_executable: gcov-14
+            gcov_executable: "llvm-cov gcov"
             enable_ipo: On
-
-          - build_type: Release
-            preset: conan-release
-
-          - build_type: Debug
-            preset: conan-debug
 
           - os: windows-latest
             compiler: msvc
@@ -74,6 +69,12 @@ jobs:
             generator: "Visual Studio 17 2022"
             build_type: Release
             enable_ipo: On
+
+          - build_type: Release
+            preset: conan-release
+
+          - build_type: Debug
+            preset: conan-debug
 
     steps:
     - name: Checkout repository
