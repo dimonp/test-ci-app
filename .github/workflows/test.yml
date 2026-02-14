@@ -68,14 +68,14 @@ jobs:
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Debug
-            preset: conan-debug
+            preset: conan-default
             enable_ipo: On
 
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
-            preset: conan-release
+            preset: conan-default
             enable_ipo: On
 
     steps:
