@@ -118,8 +118,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: conan install . -s build_type=${{ matrix.build_type }} --build=missing -o build_subfolder=${{ matrix.build_type }}
 
-    - name: Configure CMake default
-      if: matrix.compiler != 'msvc'
+    - name: Configure CMake
       run: >
         cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -S "${{ github.workspace }}"
@@ -127,19 +126,6 @@ jobs:
         -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
         -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{ matrix.packaging_maintainer_mode }}
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
-        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/conan/conan_toolchain.cmake"
-        --preset ${{ matrix.preset }}
-
-    - name: Configure CMake MSVC
-      if: matrix.compiler == 'msvc'
-      run: >
-        cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
-        -S "${{ github.workspace }}"
-        -G "${{ matrix.generator }}"
-        -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
-        -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{ matrix.packaging_maintainer_mode }}
-        -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
-        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/conan/conan_toolchain.cmake"
         --preset ${{ matrix.preset }}
 
     - name: Build project
