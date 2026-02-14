@@ -23,10 +23,10 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          # - windows-latest
 
         compiler:
-          - llvm-19.1.1
+          # - llvm-19.1.1
           - gcc-14
 
         generator:
@@ -38,9 +38,6 @@ jobs:
 
         build_shared:
           - OFF
-
-        preset:
-          - conf-unixlike-common
 
         exclude:
           - os: windows-latest
@@ -61,19 +58,23 @@ jobs:
             GCOV: "llvm-cov gcov"
             enable_ipo: On
 
+          - build_type: Release
+            preset: conan-release
+
+          - build_type: Debug
+            preset: conan-debug
+
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Debug
             enable_ipo: On
-            preset: windows-msvc-debug
 
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
             enable_ipo: On
-            preset: windows-msvc-release
 
     steps:
     - name: Checkout repository
@@ -88,6 +89,11 @@ jobs:
         build_type: ${{ matrix.build_type }}
         packaging_maintainer_mode: ${{ matrix.packaging_maintainer_mode }}
         generator: ${{ matrix.generator }}
+
+    - name: Project Name
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: '.github/constants.env'
 
     - name: Setup C++ environment (optional, but helpful for pre-installed tools)
       # This marketplace action can set up compiler, cmake, ninja, and vcpkg
@@ -105,36 +111,54 @@ jobs:
 
     - name: Install project dependencies
       working-directory: ${{ github.workspace }}
-      run: conan install . -s build_type=${{ matrix.build_type }} --build=missing
+      run: conan install . -s build_type=${{ matrix.build_type }} --build=missing -o build_subfolder=${{ matrix.build_type }}
 
     - name: Configure CMake default
       if: matrix.compiler != 'msvc'
       run: >
-        cmake -B "${{ github.workspace }}/build"
+        cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -S "${{ github.workspace }}"
         -G "${{ matrix.generator }}"
         -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
         -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{ matrix.packaging_maintainer_mode }}
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
-        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/generators/conan_toolchain.cmake"
+        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/conan/conan_toolchain.cmake"
         --preset ${{ matrix.preset }}
 
     - name: Configure CMake MSVC
       if: matrix.compiler == 'msvc'
       run: >
-        cmake -B "${{ github.workspace }}/build"
+        cmake -B "${{ github.workspace }}/build/${{ matrix.build_type }}"
         -S "${{ github.workspace }}"
         -G "${{ matrix.generator }}"
         -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
         -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=${{ matrix.packaging_maintainer_mode }}
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
-        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/generators/conan_toolchain.cmake"
+        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/build/${{ matrix.build_type }}/conan/conan_toolchain.cmake"
         --preset ${{ matrix.preset }}
 
     - name: Build project
       working-directory: ${{ github.workspace }}
-      run: cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }}
+      run: cmake --build "${{ github.workspace }}/build/${{ matrix.build_type }}" --config ${{ matrix.build_type }}
 
-    - name: Run tests
-      working-directory: "${{ github.workspace }}/build"
-      run: ctest
+    - name: Unix - Test and coverage
+      if: runner.os != 'Windows'
+      working-directory: ./build/${{ matrix.build_type }}
+      run: |
+        ctest -C ${{ matrix.build_type }}
+        gcovr -j ${{ env.nproc }} --root ../../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
+
+    - name: Windows - Test and coverage
+      if: runner.os == 'Windows'
+      working-directory: ./build/${{ matrix.build_type }}
+      run: |
+        OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{ matrix.build_type }}
+
+    - name: Simple Badge Generator
+      uses: cjlapao/simple-badge-generator-action@v1.0.1
+      with:
+        badge-path: "./build/coverage/coverage.svg"
+        badge-type: "cobertura"
+        title: "Coverage"
+        cobertura-path: "./build/${{ matrix.build_type }}/coverage.xml"
+

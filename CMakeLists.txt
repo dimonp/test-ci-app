@@ -12,12 +12,33 @@ find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 
-# Add an executable target from the source file
-add_executable(MyConsoleApp main.cpp)
+# Add library
+add_library(MyLib foo.cpp foo.h)
 
-target_link_libraries(MyConsoleApp PRIVATE fmt::fmt)
+if(test_app_cmake_with_conan_ENABLE_COVERAGE)
+  message(test_app_cmake_with_conan_ENABLE_COVERAGE: ${test_app_cmake_with_conan_ENABLE_COVERAGE})
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    target_compile_options(MyLib INTERFACE --coverage -g)
+    target_link_libraries(MyLib INTERFACE --coverage)
+  endif()
+endif()
+
+target_link_libraries(MyLib PRIVATE fmt::fmt)
+
+# Add an executable target from the source file
+add_executable(MyConsoleApp main.cpp foo.cpp)
+
+if(test_app_cmake_with_conan_ENABLE_COVERAGE)
+  message(test_app_cmake_with_conan_ENABLE_COVERAGE: ${test_app_cmake_with_conan_ENABLE_COVERAGE})
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    target_compile_options(MyConsoleApp INTERFACE --coverage -g)
+    target_link_libraries(MyConsoleApp INTERFACE --coverage)
+  endif()
+endif()
+
 target_link_libraries(MyConsoleApp PRIVATE spdlog::spdlog)
 target_link_libraries(MyConsoleApp PRIVATE CLI11::CLI11)
+target_link_libraries(MyConsoleApp PRIVATE MyLib)
 
 ##########################INSTALL#############################
 install(TARGETS MyConsoleApp RUNTIME DESTINATION bin)
@@ -57,8 +78,11 @@ if(BUILD_TESTING)
   enable_testing()
 
   find_package(Catch2 REQUIRED)
-  add_executable(UnitTests test.cpp)
+  add_executable(UnitTests test.cpp foo.cpp)
+
   target_link_libraries(UnitTests PRIVATE Catch2::Catch2WithMain)
+  target_link_libraries(UnitTests PRIVATE fmt::fmt)
+  target_link_libraries(UnitTests PRIVATE MyLib)
 
   include(Catch)
   catch_discover_tests(UnitTests)

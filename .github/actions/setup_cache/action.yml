@@ -25,6 +25,10 @@ runs:
           ~/.cache/pip
           ~/.ccache
           ${{ github.workspace }}/.conan
+          ${{ env.HOME }}/.conan
+          ${{ env.HOME }}/.conan2
+          ${{ env.USERPROFILE }}\conan
+          ${{ env.USERPROFILE }}\conan2
 
         key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.build_type }}-${{ inputs.generator }}-${{ inputs.packaging_maintainer_mode }}-${{ hashFiles('**/CMakeLists.txt', './conanfile.txt', '**/conanfile.py') }}
         restore-keys: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.build_type }}-
