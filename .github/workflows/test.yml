@@ -58,23 +58,25 @@ jobs:
             gcov_executable: "llvm-cov gcov"
             enable_ipo: On
 
+          - build_type: Release
+            preset: conan-release
+
+          - build_type: Debug
+            preset: conan-debug
+
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Debug
+            preset: conan-debug
             enable_ipo: On
 
           - os: windows-latest
             compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
-            enable_ipo: On
-
-          - build_type: Release
             preset: conan-release
-
-          - build_type: Debug
-            preset: conan-debug
+            enable_ipo: On
 
     steps:
     - name: Checkout repository
