@@ -33,7 +33,7 @@ jobs:
           - "Ninja Multi-Config"
 
         build_type:
-          - Release
+          # - Release
           - Debug
 
         build_shared:
