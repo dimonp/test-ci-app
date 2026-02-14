@@ -105,6 +105,9 @@ jobs:
         ninja: true
         conan: true
         ccache: true
+        cppcheck: true
+        gcovr: true
+        opencppcoverage: true
 
     - name: Detects and creates the default profile
       run: conan profile detect --force
